@@ -6,18 +6,27 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitInicializador {
-    private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.themoviedb.org/3/")
-        .addConverterFactory(MoshiConverterFactory.create())
-        .build()
+object RetrofitInicializador {
+    private val BASE_URL = "https://api.themoviedb.org/3/"
+    private val filmeService: FilmeService
 
-    val filmeService = retrofit.create(FilmeService::class.java)
+    init {
+        val retrofit: Retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
-     fun pegaFilmePopular() {
-        filmeService.buscaFilmePopular(page = 1)
+        filmeService = retrofit.create(FilmeService::class.java)
+    }
+
+
+    fun pegaFilmePopular(
+        page: Int = 1,
+        success: (filmes: List<Filme>) -> Unit
+    ) {
+        filmeService.buscaFilmePopular(page = page)
             .enqueue(object : Callback<FilmeResposta> {
                 override fun onResponse(
                     call: Call<FilmeResposta>,
@@ -26,9 +35,9 @@ class RetrofitInicializador {
                     if (response.isSuccessful) {
                         val resposta = response.body()
                         if (resposta != null) {
-                            Log.i("Filmes", "Filmes: ${resposta.filmes}")
+                            success(resposta.filmes)
                         } else {
-                            Log.i("Filmes", "Sem Resposta")
+                            Log.d("Filmes", "Sem Resposta")
                         }
                     }
                 }

@@ -1,15 +1,13 @@
 package br.com.example.desafiosprintfilmes.model
 
-import androidx.room.Entity
+import com.google.gson.annotations.SerializedName
 
-@Entity
 data class Filme(
-    val id: String,
-    val titulo: String,
-    val descricao: String,
-    val imagemPoster: String,
-    val imagemFundo: String,
-    val nota: String,
-    val dataLancamento: String
-
+    @SerializedName("id") val id: Long,
+    @SerializedName("title") val titulo: String,
+    @SerializedName("overview") val descricao: String,
+    @SerializedName("poster_path") val imagemPoster: String,
+    @SerializedName("backdrop_path") val imagemFundo: String,
+    @SerializedName("vote_average") val nota: Float,
+    @SerializedName("release_date") val dataLancamento: String
 )
