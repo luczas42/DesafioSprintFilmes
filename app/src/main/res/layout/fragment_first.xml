@@ -10,12 +10,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewFilmes"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/recyclerview_filme_item"
-        tools:spanCount="3"
-        tools:itemCount="20" />
+        tools:listitem="@layout/recyclerview_filme_item" />
 </androidx.constraintlayout.widget.ConstraintLayout>
