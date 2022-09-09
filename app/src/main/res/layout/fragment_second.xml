@@ -4,4 +4,67 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SecondFragment"/>
+    tools:context=".SecondFragment">
+
+    <ImageView
+        android:id="@+id/fragment_second_filme_background"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars"
+        android:contentDescription="@string/fundo_do_filme" />
+
+    <ImageView
+        android:id="@+id/fragment_second_filme_capa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/fragment_second_filme_titulo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        tools:src="@tools:sample/avatars"
+        android:contentDescription="@string/capa_do_filme" />
+
+    <TextView
+        android:id="@+id/fragment_second_filme_titulo"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@+id/fragment_second_filme_capa"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_second_filme_background"
+        tools:text="Filme: o filme" />
+
+    <TextView
+        android:id="@+id/fragment_second_filme_nota"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/fragment_second_filme_titulo"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_second_filme_titulo"
+        tools:text="Gênero: Action" />
+
+    <TextView
+        android:id="@+id/fragment_second_filme_ano"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/fragment_second_filme_nota"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_second_filme_nota"
+        tools:text="Ano: 2022" />
+
+    <TextView
+        android:id="@+id/fragment_second_filme_descricao"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_second_filme_ano"
+        tools:text="FFIOSjfoiadjgodaisgjdao" />
+</androidx.constraintlayout.widget.ConstraintLayout>

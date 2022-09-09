@@ -6,6 +6,6 @@
     <string name="second_fragment_label">Detalhes do Filme</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-
     <string name="capa_do_filme">Capa do Filme</string>
+    <string name="fundo_do_filme">Fundo do Filme</string>
 </resources>
