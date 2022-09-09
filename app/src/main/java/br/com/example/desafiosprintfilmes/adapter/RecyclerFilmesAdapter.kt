@@ -14,8 +14,10 @@ import br.com.example.desafiosprintfilmes.model.Filme
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 
-class RecyclerFilmesAdapter(private val filmes: List<Filme>, private val context: Context) :
+class RecyclerFilmesAdapter() :
     Adapter<RecyclerFilmesAdapter.ViewHolder>() {
+
+    private val filmes: MutableList<Filme> = mutableListOf()
 
     class ViewHolder(
         view: View,
@@ -33,7 +35,7 @@ class RecyclerFilmesAdapter(private val filmes: List<Filme>, private val context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view =
-            LayoutInflater.from(context).inflate(R.layout.recyclerview_filme_item, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_filme_item, parent, false)
         return ViewHolder(view, RecyclerviewFilmeItemBinding.bind(view))
     }
 
@@ -41,7 +43,20 @@ class RecyclerFilmesAdapter(private val filmes: List<Filme>, private val context
         holder.vincula(filmes[position])
     }
 
+    fun atualizaListaFilmes(filmes: MutableList<Filme>){
+
+        val oldItemRange = this.filmes.size
+        val newItemRange = filmes.size
+
+        this.filmes.addAll(filmes)
+        notifyItemRangeInserted(oldItemRange, newItemRange)
+    }
+
+
+
     override fun getItemCount(): Int {
         return filmes.size
     }
+
+
 }

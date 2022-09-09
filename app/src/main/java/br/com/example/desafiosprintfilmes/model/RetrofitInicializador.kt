@@ -22,9 +22,8 @@ object RetrofitInicializador {
     }
 
 
-    fun pegaFilmePopular(
-        page: Int = 1,
-        success: (filmes: List<Filme>) -> Unit
+    fun pegaFilmePopular( page: Int,
+        success: (filmes: MutableList<Filme>) -> Unit
     ) {
         filmeService.buscaFilmePopular(page = page)
             .enqueue(object : Callback<FilmeResposta> {
@@ -35,7 +34,7 @@ object RetrofitInicializador {
                     if (response.isSuccessful) {
                         val resposta = response.body()
                         if (resposta != null) {
-                            success(resposta.filmes)
+                            success.invoke(resposta.filmes as MutableList<Filme>)
                         } else {
                             Log.d("Filmes", "Sem Resposta")
                         }
