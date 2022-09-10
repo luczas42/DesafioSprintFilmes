@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.navigation.fragment.findNavController
 import br.com.example.desafiosprintfilmes.databinding.FragmentSecondBinding
 import br.com.example.desafiosprintfilmes.model.Filme
+import com.bumptech.glide.Glide
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -33,7 +34,11 @@ class SecondFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        val filme: Filme = arguments?.getSerializable("filmeSelecionado") as Filme
+
+        val linkCapa = filme.imagemPoster
+        val linkFundo = filme.imagemFundo
 
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
         fundoFilme = binding.fragmentSecondFilmeBackground
@@ -43,10 +48,34 @@ class SecondFragment : Fragment() {
         descricaoFilme = binding.fragmentSecondFilmeDescricao
         filmeNota = binding.fragmentSecondFilmeNota
 
-        val args = this.arguments
-
-        tituloFilme.text = args?.getString("filmeNome")
-
+        if (filme.titulo.equals(null)) {
+            tituloFilme.text = ""
+        } else {
+            tituloFilme.text = filme.titulo
+        }
+        if (filme.dataLancamento.equals(null)) {
+            lancamentoFilme.text = ""
+        } else {
+            lancamentoFilme.text = filme.dataLancamento
+        }
+        if (filme.descricao.equals(null)) {
+            descricaoFilme.text = ""
+        } else {
+            descricaoFilme.text = filme.descricao
+        }
+        if (filme.nota.equals(null)) {
+            filmeNota.text = ""
+        } else {
+            filmeNota.text = filme.nota.toString()
+        }
+        if (!linkCapa.equals(null)) {
+            Glide.with(this).load("https://image.tmdb.org/t/p/w500${linkCapa}").centerCrop()
+                .into(capaFilme)
+        }
+        if (!linkFundo.equals(null)) {
+            Glide.with(this).load("https://image.tmdb.org/t/p/w500${linkFundo}").centerCrop()
+                .into(fundoFilme)
+        }
         return binding.root
 
     }
@@ -55,7 +84,6 @@ class SecondFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
     }
-
 
 
     override fun onDestroyView() {

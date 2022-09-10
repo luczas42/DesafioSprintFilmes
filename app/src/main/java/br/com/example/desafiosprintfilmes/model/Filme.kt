@@ -1,6 +1,7 @@
 package br.com.example.desafiosprintfilmes.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Filme(
     @SerializedName("id") val id: Long,
@@ -10,4 +11,4 @@ data class Filme(
     @SerializedName("backdrop_path") val imagemFundo: String,
     @SerializedName("vote_average") val nota: Float,
     @SerializedName("release_date") val dataLancamento: String
-)
+) : Serializable
