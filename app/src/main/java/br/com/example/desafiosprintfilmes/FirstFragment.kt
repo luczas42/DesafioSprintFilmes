@@ -83,6 +83,7 @@ class FirstFragment : Fragment() {
     }
 
     override fun onResume() {
+
         anexaFilmesOnScrollListener()
 
         super.onResume()
@@ -98,7 +99,6 @@ class FirstFragment : Fragment() {
         recyclerFilmes = binding.recyclerViewFilmes
         recyclerFilmesLayoutManager = GridLayoutManager(context, 2)
         recyclerFilmes.layoutManager = recyclerFilmesLayoutManager
-
 
         recyclerFilmes.adapter = recyclerFilmesAdapter
         recyclerFilmesAdapter.setOnItemClickListener(object : RecyclerFilmesAdapter.onItemClickListener{

@@ -58,14 +58,14 @@ class RecyclerFilmesAdapter() :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.vincula(filmes[position])
 
+        holder.vincula(filmes[position])
     }
 
     fun atualizaListaFilmes(filmes: MutableList<Filme>){
-
         val oldItemRange = this.filmes.size
         val newItemRange = filmes.size
+        this.filmes.removeAll(filmes)
         this.filmes.addAll(filmes)
         notifyItemRangeInserted(oldItemRange, newItemRange)
     }
