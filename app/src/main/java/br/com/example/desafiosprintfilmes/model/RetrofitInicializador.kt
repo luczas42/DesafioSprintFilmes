@@ -21,8 +21,8 @@ object RetrofitInicializador {
         filmeService = retrofit.create(FilmeService::class.java)
     }
 
-
-    fun pegaFilmePopular( page: Int,
+    fun pegaFilmePopular(
+        page: Int,
         success: (filmes: MutableList<Filme>) -> Unit
     ) {
         filmeService.buscaFilmePopular(page = page)
@@ -44,8 +44,6 @@ object RetrofitInicializador {
                 override fun onFailure(call: Call<FilmeResposta>, t: Throwable) {
                     Log.e("Filmes", "onFailure", t)
                 }
-
             })
     }
-
 }

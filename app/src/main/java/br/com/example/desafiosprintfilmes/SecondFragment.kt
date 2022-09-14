@@ -1,17 +1,17 @@
 package br.com.example.desafiosprintfilmes
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.Fragment
 import br.com.example.desafiosprintfilmes.databinding.FragmentSecondBinding
 import br.com.example.desafiosprintfilmes.model.Filme
 import com.bumptech.glide.Glide
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -37,16 +37,12 @@ class SecondFragment : Fragment() {
     ): View {
         val filme: Filme = arguments?.getSerializable("filmeSelecionado") as Filme
 
+        val filmeDataFormatada = formataLancamentoFilme(filme.dataLancamento)
         val linkCapa = filme.imagemPoster
         val linkFundo = filme.imagemFundo
 
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
-        fundoFilme = binding.fragmentSecondFilmeBackground
-        capaFilme = binding.fragmentSecondFilmeCapa
-        tituloFilme = binding.fragmentSecondFilmeTitulo
-        lancamentoFilme = binding.fragmentSecondFilmeAno
-        descricaoFilme = binding.fragmentSecondFilmeDescricao
-        filmeNota = binding.fragmentSecondFilmeNota
+        inicializaCampos()
 
         if (filme.titulo.equals(null)) {
             tituloFilme.text = ""
@@ -56,7 +52,8 @@ class SecondFragment : Fragment() {
         if (filme.dataLancamento.equals(null)) {
             lancamentoFilme.text = ""
         } else {
-            lancamentoFilme.text = filme.dataLancamento
+            lancamentoFilme.text = filmeDataFormatada.toString()
+
         }
         if (filme.descricao.equals(null)) {
             descricaoFilme.text = ""
@@ -78,6 +75,21 @@ class SecondFragment : Fragment() {
         }
         return binding.root
 
+    }
+
+    private fun inicializaCampos() {
+        fundoFilme = binding.fragmentSecondFilmeBackground
+        capaFilme = binding.fragmentSecondFilmeCapa
+        tituloFilme = binding.fragmentSecondFilmeTitulo
+        lancamentoFilme = binding.fragmentSecondFilmeAno
+        descricaoFilme = binding.fragmentSecondFilmeDescricao
+        filmeNota = binding.fragmentSecondFilmeNota
+    }
+
+    private fun formataLancamentoFilme(dataLancamento: String): Any {
+        val data = LocalDate.parse(dataLancamento)
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+        return data.format(formatter)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
