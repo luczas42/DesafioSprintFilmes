@@ -7,9 +7,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import br.com.example.desafiosprintfilmes.database.FilmesDatabase
 import br.com.example.desafiosprintfilmes.databinding.FragmentSecondBinding
 import br.com.example.desafiosprintfilmes.model.Filme
+import br.com.example.desafiosprintfilmes.model.FilmesFavoritos
+import br.com.example.desafiosprintfilmes.repository.FilmeRepository
 import com.bumptech.glide.Glide
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -24,6 +30,13 @@ class SecondFragment : Fragment() {
     private lateinit var lancamentoFilme: TextView
     private lateinit var descricaoFilme: TextView
     private lateinit var filmeNota: TextView
+    private lateinit var fabAddFavorito: FloatingActionButton
+
+    private val repository by lazy {
+        FilmeRepository(
+            FilmesDatabase.pegaDatabase(requireContext()).filmeFavoritoDao()
+        )
+    }
 
     private var _binding: FragmentSecondBinding? = null
 
@@ -36,10 +49,10 @@ class SecondFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val filme: Filme = arguments?.getSerializable("filmeSelecionado") as Filme
-
         val filmeDataFormatada = formataLancamentoFilme(filme.dataLancamento)
         val linkCapa = filme.imagemPoster
         val linkFundo = filme.imagemFundo
+
 
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
         inicializaCampos()
@@ -73,6 +86,22 @@ class SecondFragment : Fragment() {
             Glide.with(this).load("https://image.tmdb.org/t/p/w500${linkFundo}").centerCrop()
                 .into(fundoFilme)
         }
+
+        fabAddFavorito.setOnClickListener {
+            lifecycleScope.launch {
+                launch {
+                    val favorito = repository.checaExiste(filme)
+                    if (favorito) {
+                        fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
+                        repository.removeFilme(filme)
+                    } else {
+                        fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
+                        repository.insereFilme(filme)
+                    }
+                }
+            }
+        }
+
         return binding.root
 
     }
@@ -84,6 +113,7 @@ class SecondFragment : Fragment() {
         lancamentoFilme = binding.fragmentSecondFilmeAno
         descricaoFilme = binding.fragmentSecondFilmeDescricao
         filmeNota = binding.fragmentSecondFilmeNota
+        fabAddFavorito = binding.fabAdicionaFavorito
     }
 
     private fun formataLancamentoFilme(dataLancamento: String): Any {

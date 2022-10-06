@@ -8,4 +8,8 @@
     <string name="previous">Previous</string>
     <string name="capa_do_filme">Capa do Filme</string>
     <string name="fundo_do_filme">Fundo do Filme</string>
+    <string name="lancamento_text">Lançamento:</string>
+    <string name="descricao_text">Descrição</string>
+    <string name="nota_text">Nota:</string>
+    <string name="botao_favorito">Botão Favorito</string>
 </resources>
