@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInicializador {
     private val BASE_URL = "https://api.themoviedb.org/3/"
-    private val filmeService: FilmeService
+    val filmeService: FilmeService
 
     init {
         val retrofit: Retrofit = Retrofit.Builder()
@@ -21,29 +21,5 @@ object RetrofitInicializador {
         filmeService = retrofit.create(FilmeService::class.java)
     }
 
-    fun pegaFilmePopular(
-        page: Int,
-        success: (filmes: MutableList<Filme>) -> Unit
-    ) {
-        filmeService.buscaFilmePopular(page = page)
-            .enqueue(object : Callback<FilmeResposta> {
-                override fun onResponse(
-                    call: Call<FilmeResposta>,
-                    response: Response<FilmeResposta>
-                ) {
-                    if (response.isSuccessful) {
-                        val resposta = response.body()
-                        if (resposta != null) {
-                            success.invoke(resposta.filmes as MutableList<Filme>)
-                        } else {
-                            Log.d("Filmes", "Sem Resposta")
-                        }
-                    }
-                }
 
-                override fun onFailure(call: Call<FilmeResposta>, t: Throwable) {
-                    Log.e("Filmes", "onFailure", t)
-                }
-            })
-    }
 }

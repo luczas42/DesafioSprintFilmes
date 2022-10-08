@@ -7,22 +7,24 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import br.com.example.desafiosprintfilmes.database.FilmesDatabase
-import br.com.example.desafiosprintfilmes.databinding.FragmentSecondBinding
+import br.com.example.desafiosprintfilmes.databinding.FragmentDetalhesBinding
 import br.com.example.desafiosprintfilmes.model.Filme
-import br.com.example.desafiosprintfilmes.model.FilmesFavoritos
 import br.com.example.desafiosprintfilmes.repository.FilmeRepository
+import br.com.example.desafiosprintfilmes.viewmodel.FilmesViewModel
+import br.com.example.desafiosprintfilmes.viewmodel.FilmesViewModelFactory
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
-class SecondFragment : Fragment() {
+class DetalhesFragment : Fragment() {
+
 
     private lateinit var fundoFilme: ImageView
     private lateinit var capaFilme: ImageView
@@ -31,14 +33,17 @@ class SecondFragment : Fragment() {
     private lateinit var descricaoFilme: TextView
     private lateinit var filmeNota: TextView
     private lateinit var fabAddFavorito: FloatingActionButton
-
     private val repository by lazy {
         FilmeRepository(
-            FilmesDatabase.pegaDatabase(requireContext()).filmeFavoritoDao()
+            favoritosDao = FilmesDatabase.pegaDatabase(requireContext()).filmeFavoritoDao()
         )
     }
+    private val viewModel: FilmesViewModel by activityViewModels {
+        FilmesViewModelFactory(repository)
+    }
 
-    private var _binding: FragmentSecondBinding? = null
+
+    private var _binding: FragmentDetalhesBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -48,14 +53,16 @@ class SecondFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val filme: Filme = arguments?.getSerializable("filmeSelecionado") as Filme
+        val filme: Filme = viewModel.filmeSelecionado.value!!
         val filmeDataFormatada = formataLancamentoFilme(filme.dataLancamento)
         val linkCapa = filme.imagemPoster
         val linkFundo = filme.imagemFundo
 
-
-        _binding = FragmentSecondBinding.inflate(inflater, container, false)
+        _binding = FragmentDetalhesBinding.inflate(inflater, container, false)
         inicializaCampos()
+        viewModel.checaFavorito(filme)
+        alteraBotao()
+
 
         if (filme.titulo.equals(null)) {
             tituloFilme.text = ""
@@ -88,48 +95,62 @@ class SecondFragment : Fragment() {
         }
 
         fabAddFavorito.setOnClickListener {
-            lifecycleScope.launch {
-                launch {
-                    val favorito = repository.checaExiste(filme)
-                    if (favorito) {
-                        fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
-                        repository.removeFilme(filme)
-                    } else {
-                        fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
-                        repository.insereFilme(filme)
-                    }
-                }
-            }
+            viewModel.alteraFavorito(filme)
+            alteraBotao()
         }
 
-        return binding.root
+
+    return binding.root
+
+}
+
+    private fun alteraBotao() {
+        viewModel.observaFavoritoLiveData().observe(viewLifecycleOwner){ favorito ->
+            if (favorito) {
+                fabAddFavorito.setImageDrawable(
+                    (
+                            resources.getDrawable(
+                                R.drawable.ic_baseline_star_24,
+                                null
+                            )
+                            )
+                )
+            } else {
+                fabAddFavorito.setImageDrawable(
+                    resources.getDrawable(
+                        R.drawable.ic_baseline_star_border_24,
+                        null
+                    )
+                )
+            }
+        }
 
     }
 
     private fun inicializaCampos() {
-        fundoFilme = binding.fragmentSecondFilmeBackground
-        capaFilme = binding.fragmentSecondFilmeCapa
-        tituloFilme = binding.fragmentSecondFilmeTitulo
-        lancamentoFilme = binding.fragmentSecondFilmeAno
-        descricaoFilme = binding.fragmentSecondFilmeDescricao
-        filmeNota = binding.fragmentSecondFilmeNota
-        fabAddFavorito = binding.fabAdicionaFavorito
-    }
+    fundoFilme = binding.fragmentSecondFilmeBackground
+    capaFilme = binding.fragmentSecondFilmeCapa
+    tituloFilme = binding.fragmentSecondFilmeTitulo
+    lancamentoFilme = binding.fragmentSecondFilmeAno
+    descricaoFilme = binding.fragmentSecondFilmeDescricao
+    filmeNota = binding.fragmentSecondFilmeNota
+    fabAddFavorito = binding.fabAdicionaFavorito
+}
 
-    private fun formataLancamentoFilme(dataLancamento: String): Any {
-        val data = LocalDate.parse(dataLancamento)
-        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-        return data.format(formatter)
-    }
+private fun formataLancamentoFilme(dataLancamento: String): Any {
+    val data = LocalDate.parse(dataLancamento)
+    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    return data.format(formatter)
+}
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
 
-    }
+}
 
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+override fun onDestroyView() {
+    super.onDestroyView()
+    _binding = null
+}
 }

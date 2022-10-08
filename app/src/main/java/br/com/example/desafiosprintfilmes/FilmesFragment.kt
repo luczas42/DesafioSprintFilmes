@@ -4,32 +4,41 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.example.desafiosprintfilmes.adapter.RecyclerFilmesAdapter
-import br.com.example.desafiosprintfilmes.databinding.FragmentFirstBinding
+import br.com.example.desafiosprintfilmes.database.FilmesDatabase
+import br.com.example.desafiosprintfilmes.databinding.FragmentFilmesBinding
 import br.com.example.desafiosprintfilmes.model.Filme
-import br.com.example.desafiosprintfilmes.model.RetrofitInicializador
+import br.com.example.desafiosprintfilmes.repository.FilmeRepository
+import br.com.example.desafiosprintfilmes.viewmodel.FilmesViewModel
+import br.com.example.desafiosprintfilmes.viewmodel.FilmesViewModelFactory
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : Fragment() {
+class FilmesFragment : Fragment() {
     private lateinit var recyclerFilmes: RecyclerView
-
+    private val repository by lazy {
+        FilmeRepository(
+            favoritosDao = FilmesDatabase.pegaDatabase(requireContext()).filmeFavoritoDao())
+    }
+    private val viewModel: FilmesViewModel by activityViewModels {
+        FilmesViewModelFactory(repository)
+    }
     private val recyclerFilmesAdapter by lazy { RecyclerFilmesAdapter() }
 
     private lateinit var recyclerFilmesLayoutManager: GridLayoutManager
     private lateinit var recyclerViewFilmesObservador: RecyclerView.OnScrollListener
 
 
-    private var filmesPopularesPagina = 1
-
-
-    private var _binding: FragmentFirstBinding? = null
+    private var _binding: FragmentFilmesBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -39,23 +48,33 @@ class FirstFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
+        _binding = FragmentFilmesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         configuraRecycler()
+//        configuraViewModel()
+        pegaPopulares()
         configuraOnClickListener()
-        pegaFilmesPopulares()
         super.onViewCreated(view, savedInstanceState)
 
     }
+//
+//    private fun configuraViewModel() {
+//        viewModelFactory = FilmesViewModelFactory(repository)
+//        viewModel = ViewModelProvider(this, viewModelFactory)[FilmesViewModel::class.java]
+//    }
 
-    private fun pegaFilmesPopulares() {
-        RetrofitInicializador.pegaFilmePopular(
-            filmesPopularesPagina,
-            success = ::filmesPopularesEncontrados
-        )
+    private fun pegaPopulares() {
+        viewModel.pegaFilmePopular()
+        viewModel.observaFilmeLiveData().observe(viewLifecycleOwner) { filmes ->
+            recyclerFilmesAdapter.atualizaListaFilmes(filmes as MutableList<Filme>)
+            if (::recyclerViewFilmesObservador.isInitialized) {
+                recyclerFilmes.removeOnScrollListener(recyclerViewFilmesObservador)
+                recyclerFilmes.addOnScrollListener(recyclerViewFilmesObservador)
+            }
+        }
     }
 
     private fun anexaFilmesOnScrollListener() {
@@ -70,9 +89,9 @@ class FirstFragment : Fragment() {
                     val totalItemCount = layoutManager.itemCount
 
                     if (totalItemVisible >= totalItemCount) {
+                        viewModel.filmesPopularesPagina += 1
                         recyclerFilmes.removeOnScrollListener(recyclerViewFilmesObservador)
-                        filmesPopularesPagina++
-                        pegaFilmesPopulares()
+                        pegaPopulares()
 
                     }
                 }
@@ -99,40 +118,26 @@ class FirstFragment : Fragment() {
         recyclerFilmesAdapter.setOnItemClickListener(object :
             RecyclerFilmesAdapter.onItemClickListener {
             override fun onItemClick(position: Int) {
-                val filme: Filme = recyclerFilmesAdapter.pegaFilmeSelecionado(position)
-                val fragment: Fragment = SecondFragment()
-                val bundle = Bundle()
-                bundle.putSerializable("filmeSelecionado", filme)
-                fragment.arguments = bundle
-                vaiParaSecondFragment(bundle)
+                viewModel._filmeSelecionado.value = recyclerFilmesAdapter.pegaFilmeSelecionado(position)
+                vaiParaSecondFragment()
             }
 
         })
     }
 
-    private fun vaiParaSecondFragment(bundle: Bundle) {
+    private fun vaiParaSecondFragment() {
         parentFragment?.let {
             NavHostFragment.findNavController(it)
-                .navigate(R.id.action_FirstFragment_to_SecondFragment, bundle)
+                .navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
     }
 
     private fun configuraRecycler() {
         recyclerFilmes = binding.recyclerViewFilmes
-        recyclerFilmesLayoutManager = GridLayoutManager(context, 2)
+        recyclerFilmesLayoutManager = GridLayoutManager(context, 4)
         recyclerFilmes.layoutManager = recyclerFilmesLayoutManager
         recyclerFilmes.adapter = recyclerFilmesAdapter
     }
-
-
-    private fun filmesPopularesEncontrados(filmes: MutableList<Filme>) {
-        recyclerFilmesAdapter.atualizaListaFilmes(filmes)
-        if (::recyclerViewFilmesObservador.isInitialized) {
-            recyclerFilmes.removeOnScrollListener(recyclerViewFilmesObservador)
-            recyclerFilmes.addOnScrollListener(recyclerViewFilmesObservador)
-        }
-    }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

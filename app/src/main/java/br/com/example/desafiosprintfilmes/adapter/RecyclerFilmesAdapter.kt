@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 class RecyclerFilmesAdapter() :
     Adapter<RecyclerFilmesAdapter.ViewHolder>() {
 
-    private val filmes: MutableList<Filme> = mutableListOf()
+    private var filmes: MutableList<Filme> = mutableListOf()
 
     private lateinit var mListener: onItemClickListener
 
@@ -31,11 +31,8 @@ class RecyclerFilmesAdapter() :
     ) : RecyclerView.ViewHolder(view) {
         fun vincula(filme: Filme) {
 
-            val ano = filme.dataLancamento.take(4)
-
             Glide.with(itemView).load("https://image.tmdb.org/t/p/w500${filme.imagemPoster}")
                 .into(binding.recyclerviewFilmeItemCapaFilme)
-            binding.recyclerviewFilmeItemAnoFilme.text = ano
         }
 
         init {

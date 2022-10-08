@@ -8,7 +8,7 @@
     <androidx.cardview.widget.CardView
         android:layout_margin="8dp"
         android:layout_width="match_parent"
-        android:layout_height="318dp"
+        android:layout_height="159dp"
         app:cardCornerRadius="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,28 +22,14 @@
             <ImageView
                 android:id="@+id/recyclerview_filme_item_capa_filme"
                 android:layout_width="match_parent"
-                android:layout_height="298dp"
+                android:layout_height="159dp"
                 android:scaleType="centerCrop"
-                app:layout_constraintBottom_toTopOf="@id/recyclerview_filme_item_ano_filme"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0"
                 tools:srcCompat="@tools:sample/avatars"
                 android:contentDescription="@string/capa_do_filme" />
-
-            <TextView
-                android:textAlignment="center"
-                android:id="@+id/recyclerview_filme_item_ano_filme"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:layout_margin="4dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/recyclerview_filme_item_capa_filme"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:text="2022" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

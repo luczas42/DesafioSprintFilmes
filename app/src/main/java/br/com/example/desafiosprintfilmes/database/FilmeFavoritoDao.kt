@@ -1,27 +1,25 @@
 package br.com.example.desafiosprintfilmes.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import br.com.example.desafiosprintfilmes.model.Filme
-import br.com.example.desafiosprintfilmes.model.FilmesFavoritos
 
 
 @Dao
 interface FilmeFavoritoDao {
 
-    @Query("SELECT * FROM filmesfavoritos")
-    fun pegaTodos(): List<FilmesFavoritos>
+    @Query("SELECT * FROM Filme")
+    suspend fun pegaTodos(): List<Filme>
 
-    @Query("INSERT INTO filmesfavoritos (filme_id) VALUES (:filmeId)")
-    suspend fun insereFilme(filmeId: Long)
+    @Insert
+    suspend fun insereFilme(filme: Filme)
 
-    @Query("DELETE FROM filmesfavoritos WHERE filme_id = :filmeId")
-    suspend fun removeFilme(filmeId: Long)
+    @Delete
+    suspend fun removeFilme(filme: Filme)
 
-    @Query("SELECT EXISTS (SELECT 1 FROM filmesfavoritos WHERE filme_id = :filmeSelecionado)")
-    suspend fun checaExiste(filmeSelecionado: Long):Boolean
-
-
+    @Query("SELECT EXISTS (SELECT 1 FROM filme WHERE id = :idSelecionado)")
+    suspend fun checaExiste(idSelecionado: Long): Boolean
 }
