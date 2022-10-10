@@ -62,6 +62,12 @@ class RecyclerFilmesAdapter() :
         notifyItemRangeInserted(oldItemRange, newItemRange)
     }
 
+    fun atualizaListaFilmesFavoritos(filmes: MutableList<Filme>){
+        this.filmes.removeAll(filmes)
+        this.filmes.addAll(filmes)
+        notifyDataSetChanged()
+    }
+
 
 
 

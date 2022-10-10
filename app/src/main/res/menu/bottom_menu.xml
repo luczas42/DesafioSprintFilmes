@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Populares"
+        android:id="@+id/FirstFragment"
+        android:icon="@drawable/ic_baseline_trending_up_24"/>
+    <item android:title="Favoritos"
+        android:id="@+id/favoritosFragment"
+        android:icon="@drawable/ic_baseline_favorite_24"/>
+</menu>
