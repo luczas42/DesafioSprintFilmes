@@ -15,5 +15,5 @@ data class Filme(
     @SerializedName("poster_path") val imagemPoster: String,
     @SerializedName("backdrop_path") val imagemFundo: String,
     @SerializedName("vote_average") val nota: Float,
-    @SerializedName("release_date") val dataLancamento: String
+    @SerializedName("release_date") val dataLancamento: String,
 ) : Serializable

@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">DesafioSprintFilmes</string>
+    <string name="app_name">Filmes App</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">Lista de Filmes</string>
-    <string name="second_fragment_label">Detalhes do Filme</string>
+    <string name="first_fragment_label">Filmes App</string>
+    <string name="second_fragment_label">Filmes App</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="capa_do_filme">Capa do Filme</string>

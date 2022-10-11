@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import br.com.example.desafiosprintfilmes.database.FilmesDatabase
 import br.com.example.desafiosprintfilmes.databinding.FragmentDetalhesBinding
 import br.com.example.desafiosprintfilmes.model.Filme
@@ -96,7 +96,13 @@ class DetalhesFragment : Fragment() {
 
         fabAddFavorito.setOnClickListener {
             viewModel.alteraFavorito(filme)
-            alteraBotao()
+            viewModel.observaFavoritoLiveData().observe(viewLifecycleOwner){ favorito ->
+                if (favorito) {
+                    fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
+                } else {
+                fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
+                }
+            }
         }
 
 
@@ -107,21 +113,10 @@ class DetalhesFragment : Fragment() {
     private fun alteraBotao() {
         viewModel.observaFavoritoLiveData().observe(viewLifecycleOwner){ favorito ->
             if (favorito) {
-                fabAddFavorito.setImageDrawable(
-                    (
-                            resources.getDrawable(
-                                R.drawable.ic_baseline_star_24,
-                                null
-                            )
-                            )
-                )
+                fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
+
             } else {
-                fabAddFavorito.setImageDrawable(
-                    resources.getDrawable(
-                        R.drawable.ic_baseline_star_border_24,
-                        null
-                    )
-                )
+                fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
             }
         }
 

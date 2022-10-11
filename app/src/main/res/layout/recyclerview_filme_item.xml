@@ -6,9 +6,9 @@
     android:layout_height="wrap_content">
 
     <androidx.cardview.widget.CardView
-        android:layout_margin="8dp"
         android:layout_width="match_parent"
         android:layout_height="159dp"
+        android:layout_margin="8dp"
         app:cardCornerRadius="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -19,17 +19,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <CheckBox
+                android:id="@+id/botaoSelecionado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="@+id/recyclerview_filme_item_capa_filme"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <ImageView
                 android:id="@+id/recyclerview_filme_item_capa_filme"
                 android:layout_width="match_parent"
                 android:layout_height="159dp"
+                android:contentDescription="@string/capa_do_filme"
                 android:scaleType="centerCrop"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0"
-                tools:srcCompat="@tools:sample/avatars"
-                android:contentDescription="@string/capa_do_filme" />
+                tools:srcCompat="@tools:sample/avatars" />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

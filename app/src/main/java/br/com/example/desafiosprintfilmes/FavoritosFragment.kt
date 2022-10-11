@@ -1,17 +1,16 @@
 package br.com.example.desafiosprintfilmes
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Toast
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import br.com.example.desafiosprintfilmes.adapter.RecyclerFilmesAdapter
+import br.com.example.desafiosprintfilmes.adapter.RecyclerFavoritosAdapter
 import br.com.example.desafiosprintfilmes.database.FilmesDatabase
 import br.com.example.desafiosprintfilmes.databinding.FragmentFavoritosBinding
 import br.com.example.desafiosprintfilmes.model.Filme
@@ -20,7 +19,10 @@ import br.com.example.desafiosprintfilmes.viewmodel.FilmesViewModel
 import br.com.example.desafiosprintfilmes.viewmodel.FilmesViewModelFactory
 
 class FavoritosFragment : Fragment() {
+    private lateinit var menuHost: MenuHost
     private lateinit var recyclerFilmes: RecyclerView
+    private lateinit var provider: MenuProvider
+
 
     private val repository by lazy {
         FilmeRepository(
@@ -30,8 +32,9 @@ class FavoritosFragment : Fragment() {
     private val viewModel: FilmesViewModel by activityViewModels {
         FilmesViewModelFactory(repository)
     }
-    private val recyclerFilmesAdapter by lazy { RecyclerFilmesAdapter() }
-
+    private val recyclerFilmesAdapter by lazy {
+        RecyclerFavoritosAdapter()
+    }
     private lateinit var recyclerFilmesLayoutManager: GridLayoutManager
 
 
@@ -46,14 +49,74 @@ class FavoritosFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFavoritosBinding.inflate(inflater, container, false)
+
         return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        menuHost = requireActivity()
+        configuraProvider()
+        viewModel.modoSelecao = false
+        configuraMenuDeletar()
+        if (viewModel.modoSelecao) {
+
+        }
+
         configuraRecycler()
         pegaFavoritos()
         configuraOnClickListener()
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    private fun configuraMenuDeletar() {
+        menuHost.removeMenuProvider(provider)
+        menuHost.addMenuProvider(provider)
+    }
+
+    private fun configuraProvider() {
+        provider = object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.delete_menu, menu)
+            }
+
+            override fun onPrepareMenu(menu: Menu) {
+                exibirMenuDeletar(menu)
+                super.onPrepareMenu(menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_deletar -> {
+                        val filmesDeletar: List<Filme> =
+                            recyclerFilmesAdapter.mostraListaDeSelecionadods()
+                        Toast.makeText(
+                            requireContext(),
+                            filmesDeletar.size.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        viewModel.removeFilmes(filmesDeletar)
+                        pegaFavoritos()
+                        viewModel.modoSelecao = !viewModel.modoSelecao
+                        menuHost.invalidateMenu()
+                        true
+                    }
+                    else -> {
+                        false
+                    }
+                }
+            }
+
+        }
+    }
+
+    private fun exibirMenuDeletar(menu: Menu) {
+        if (viewModel.modoSelecao) {
+            menu.findItem(R.id.menu_deletar).isVisible = viewModel.modoSelecao
+            menu.findItem(R.id.menu_selecionar_todos).isVisible = viewModel.modoSelecao
+        } else {
+            menu.clear()
+        }
     }
 
     private fun pegaFavoritos() {
@@ -75,13 +138,29 @@ class FavoritosFragment : Fragment() {
 
     private fun configuraOnClickListener() {
         recyclerFilmesAdapter.setOnItemClickListener(object :
-            RecyclerFilmesAdapter.onItemClickListener {
+            RecyclerFavoritosAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                viewModel._filmeSelecionado.value = recyclerFilmesAdapter.pegaFilmeSelecionado(position)
-                vaiParaSecondFragment()
+                if (viewModel.modoSelecao) {
+                    recyclerFilmesAdapter.alteraSelecao(position)
+                } else {
+                    viewModel._filmeSelecionado.value =
+                        recyclerFilmesAdapter.pegaFilmeSelecionado(position)
+                    vaiParaSecondFragment()
+                }
+            }
+        })
+        recyclerFilmesAdapter.onItemLongClicked = { position ->
+            viewModel.modoSelecao = !viewModel.modoSelecao
+            menuHost.invalidateMenu()
+            if (viewModel.modoSelecao) {
+                recyclerFilmesAdapter.alteraSelecao(position)
+            } else {
+
+                configuraMenuDeletar()
+                recyclerFilmesAdapter.limpaSelecao()
             }
 
-        })
+        }
     }
 
     private fun vaiParaSecondFragment() {
@@ -99,6 +178,7 @@ class FavoritosFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        menuHost.removeMenuProvider(provider)
         super.onDestroyView()
         _binding = null
     }

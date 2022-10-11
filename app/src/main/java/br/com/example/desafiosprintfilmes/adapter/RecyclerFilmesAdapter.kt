@@ -10,23 +10,26 @@ import br.com.example.desafiosprintfilmes.databinding.RecyclerviewFilmeItemBindi
 import br.com.example.desafiosprintfilmes.model.Filme
 import com.bumptech.glide.Glide
 
-class RecyclerFilmesAdapter() :
+class RecyclerFilmesAdapter(
+) :
     Adapter<RecyclerFilmesAdapter.ViewHolder>() {
 
     private var filmes: MutableList<Filme> = mutableListOf()
 
-    private lateinit var mListener: onItemClickListener
 
-    interface onItemClickListener{
+
+    private lateinit var mListener: OnItemClickListener
+
+    interface OnItemClickListener{
         fun onItemClick(position: Int)
     }
 
-    fun setOnItemClickListener(listener: onItemClickListener){
+    fun setOnItemClickListener(listener: OnItemClickListener){
         mListener = listener
     }
 
     class ViewHolder(
-        view: View, listener: onItemClickListener,
+        view: View, listener: OnItemClickListener,
         private val binding: RecyclerviewFilmeItemBinding
     ) : RecyclerView.ViewHolder(view) {
         fun vincula(filme: Filme) {
@@ -52,6 +55,7 @@ class RecyclerFilmesAdapter() :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         holder.vincula(filmes[position])
+
     }
 
     fun atualizaListaFilmes(filmes: MutableList<Filme>){
@@ -61,14 +65,6 @@ class RecyclerFilmesAdapter() :
         this.filmes.addAll(filmes)
         notifyItemRangeInserted(oldItemRange, newItemRange)
     }
-
-    fun atualizaListaFilmesFavoritos(filmes: MutableList<Filme>){
-        this.filmes.removeAll(filmes)
-        this.filmes.addAll(filmes)
-        notifyDataSetChanged()
-    }
-
-
 
 
     override fun getItemCount(): Int {

@@ -1,5 +1,6 @@
 package br.com.example.desafiosprintfilmes.viewmodel
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,16 +19,29 @@ class FilmesViewModel(val repository: FilmeRepository) : ViewModel() {
     var filmesPopularesPagina = 1
     private var filmesLista = MutableLiveData<List<Filme>>()
     private var filmesFavoritosLista = MutableLiveData<List<Filme>>()
-
+    var modoSelecao = false
     var _filmeSelecionado = MutableLiveData<Filme>()
     var filmeSelecionado : LiveData<Filme> = _filmeSelecionado
     var favorito = MutableLiveData<Boolean>()
 
     fun checaFavorito(filme:Filme){
         viewModelScope.launch {
-                favorito.value = repository.checaExiste(filme)
+            if (repository.checaExiste(filme)){
+                favorito.value = true
+            }else{
+                favorito.value = false
+            }
+
         }
 
+    }
+
+    fun removeFilmes(filmes: List<Filme>){
+        viewModelScope.launch {
+            for (element in filmes){
+                repository.removeFilme(element)
+            }
+        }
     }
 
     fun alteraFavorito(filme:Filme) {
