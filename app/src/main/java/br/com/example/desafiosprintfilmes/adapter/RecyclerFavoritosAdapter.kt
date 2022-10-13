@@ -1,11 +1,11 @@
 package br.com.example.desafiosprintfilmes.adapter
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.RadioButton
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import br.com.example.desafiosprintfilmes.R
@@ -20,7 +20,7 @@ class RecyclerFavoritosAdapter() :
     private var filmes: MutableList<Filme> = mutableListOf()
     private var filmesSelecionados: MutableList<Filme> = mutableListOf()
 
-    private lateinit var botaoSelecionado: CheckBox
+    private lateinit var botaoSelecionado: ImageView
 
     private lateinit var mListener: OnItemClickListener
     lateinit var onItemLongClicked: (position: Int) -> Unit
@@ -41,7 +41,7 @@ class RecyclerFavoritosAdapter() :
     ) : RecyclerView.ViewHolder(view) {
 
         fun vincula(filme: Filme) {
-            botaoSelecionado= binding.botaoSelecionado
+            botaoSelecionado = binding.botaoSelecionado
             Glide.with(itemView).load("https://image.tmdb.org/t/p/w500${filme.imagemPoster}")
                 .into(binding.recyclerviewFilmeItemCapaFilme)
 
@@ -68,9 +68,8 @@ class RecyclerFavoritosAdapter() :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.vincula(filmes[position])
-        if (isSelected(position)){
-            botaoSelecionado.isChecked = true
-        }
+        botaoSelecionado.isClickable = false
+        botaoSelecionado.isVisible = isSelected(position)
     }
 
 
@@ -80,6 +79,12 @@ class RecyclerFavoritosAdapter() :
         notifyDataSetChanged()
     }
 
+    fun removeSelecionandos(){
+        for (i in 0 until filmesSelecionados.size){
+            this.filmes.remove(filmesSelecionados[i])
+        }
+        notifyDataSetChanged()
+    }
 
 
     override fun getItemCount(): Int {
@@ -90,41 +95,32 @@ class RecyclerFavoritosAdapter() :
         return this.filmes[position]
     }
 
-    fun isSelected(position: Int):Boolean{
+    fun isSelected(position: Int): Boolean {
         return filmesSelecionados.contains(filmes[position])
     }
 
     fun alteraSelecao(position: Int) {
         if (isSelected(position)) {
-            botaoSelecionado.isChecked = false
             filmesSelecionados.remove(filmes[position])
         } else {
-            botaoSelecionado.visibility = View.VISIBLE
-            botaoSelecionado.isChecked = true
             filmesSelecionados.add(filmes[position])
         }
-        notifyDataSetChanged()
+        notifyItemChanged(position)
+
     }
 
     fun selecionaTodos() {
         for (i in 0 until filmes.size) {
-            if (!filmesSelecionados.contains(filmes[i])) {
-                botaoSelecionado.visibility = View.VISIBLE
+            if (!isSelected(i)) {
                 filmesSelecionados.add(filmes[i])
             }
             notifyItemChanged(i)
         }
-        notifyDataSetChanged()
     }
 
     fun limpaSelecao() {
         botaoSelecionado.visibility = View.INVISIBLE
-        for (i in 0 until filmes.size) {
-            if (filmesSelecionados.contains(filmes[i])) {
-                filmesSelecionados.remove(filmes[i])
-            }
-            notifyItemChanged(i)
-        }
+        filmesSelecionados.clear()
         notifyDataSetChanged()
     }
 
@@ -132,7 +128,7 @@ class RecyclerFavoritosAdapter() :
         return filmesSelecionados.size
     }
 
-    fun mostraListaDeSelecionadods(): List<Filme>{
+    fun mostraListaDeSelecionadods(): List<Filme> {
         return filmesSelecionados
     }
 }

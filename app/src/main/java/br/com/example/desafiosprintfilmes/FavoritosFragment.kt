@@ -59,10 +59,6 @@ class FavoritosFragment : Fragment() {
         configuraProvider()
         viewModel.modoSelecao = false
         configuraMenuDeletar()
-        if (viewModel.modoSelecao) {
-
-        }
-
         configuraRecycler()
         pegaFavoritos()
         configuraOnClickListener()
@@ -96,8 +92,13 @@ class FavoritosFragment : Fragment() {
                             Toast.LENGTH_SHORT
                         ).show()
                         viewModel.removeFilmes(filmesDeletar)
-                        pegaFavoritos()
+                        recyclerFilmesAdapter.removeSelecionandos()
                         viewModel.modoSelecao = !viewModel.modoSelecao
+                        menuHost.invalidateMenu()
+                        true
+                    }
+                    R.id.menu_selecionar_todos -> {
+                        recyclerFilmesAdapter.selecionaTodos()
                         menuHost.invalidateMenu()
                         true
                     }
@@ -106,7 +107,6 @@ class FavoritosFragment : Fragment() {
                     }
                 }
             }
-
         }
     }
 
@@ -155,7 +155,6 @@ class FavoritosFragment : Fragment() {
             if (viewModel.modoSelecao) {
                 recyclerFilmesAdapter.alteraSelecao(position)
             } else {
-
                 configuraMenuDeletar()
                 recyclerFilmesAdapter.limpaSelecao()
             }

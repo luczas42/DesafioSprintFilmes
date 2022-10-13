@@ -26,12 +26,7 @@ class FilmesViewModel(val repository: FilmeRepository) : ViewModel() {
 
     fun checaFavorito(filme:Filme){
         viewModelScope.launch {
-            if (repository.checaExiste(filme)){
-                favorito.value = true
-            }else{
-                favorito.value = false
-            }
-
+            favorito.value = repository.checaExiste(filme)
         }
 
     }
