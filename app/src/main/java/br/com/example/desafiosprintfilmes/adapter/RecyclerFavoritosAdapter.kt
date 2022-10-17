@@ -1,5 +1,6 @@
 package br.com.example.desafiosprintfilmes.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,17 +69,18 @@ class RecyclerFavoritosAdapter() :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.vincula(filmes[position])
-        botaoSelecionado.isClickable = false
         botaoSelecionado.isVisible = isSelected(position)
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     fun atualizaListaFilmesFavoritos(filmes: MutableList<Filme>) {
         this.filmes.clear()
         this.filmes.addAll(filmes)
         notifyDataSetChanged()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun removeSelecionandos(){
         for (i in 0 until filmesSelecionados.size){
             this.filmes.remove(filmesSelecionados[i])
@@ -118,14 +120,11 @@ class RecyclerFavoritosAdapter() :
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun limpaSelecao() {
         botaoSelecionado.visibility = View.INVISIBLE
         filmesSelecionados.clear()
         notifyDataSetChanged()
-    }
-
-    fun getSelectedItemCount(): Int {
-        return filmesSelecionados.size
     }
 
     fun mostraListaDeSelecionadods(): List<Filme> {

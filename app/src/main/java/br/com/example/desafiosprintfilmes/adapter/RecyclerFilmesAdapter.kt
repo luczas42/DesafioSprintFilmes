@@ -1,5 +1,6 @@
 package br.com.example.desafiosprintfilmes.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,6 +57,12 @@ class RecyclerFilmesAdapter(
 
         holder.vincula(filmes[position])
 
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun atualizaPesquisados() {
+        this.filmes.clear()
+        notifyDataSetChanged()
     }
 
     fun atualizaListaFilmes(filmes: MutableList<Filme>){

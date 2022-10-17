@@ -4,6 +4,10 @@
     <item android:title="Populares"
         android:id="@+id/FirstFragment"
         android:icon="@drawable/ic_baseline_trending_up_24"/>
+    <item android:title="Pesquisar"
+        android:id="@+id/pesquisaFragment"
+        android:icon="@drawable/ic_baseline_search_24"
+        />
     <item android:title="Favoritos"
         android:id="@+id/favoritosFragment"
         android:icon="@drawable/ic_baseline_favorite_24"/>

@@ -12,12 +12,19 @@ interface FilmeService {
     @GET("movie/popular")
     fun buscaFilmePopular(
         @Query("api_key") key: String = "9106a44c761c36bbb02f24c16958a56a",
-        @Query("page") page: Int
+        @Query("page") page: Int,
+        @Query("language") language: String = "pt-BR",
+        @Query("include_adult") adult: Boolean = false
     ): Call<FilmeResposta>
 
-    @GET("movie/{id}")
-    fun buscaFilmePorId(
-        @Path("id") id: String,
-        @Query("api_key") key: String = "9106a44c761c36bbb02f24c16958a56a"
-    ): Call<Filme>
+    @GET("search/movie")
+    fun pesquisaFilmes(
+        @Query("api_key") key: String = "9106a44c761c36bbb02f24c16958a56a",
+        @Query("page") page: Int,
+        @Query("query") query: String,
+        @Query("language") language: String = "pt-BR",
+        @Query("include_adult") adult: Boolean = false
+    ): Call<FilmeResposta>
+
+
 }

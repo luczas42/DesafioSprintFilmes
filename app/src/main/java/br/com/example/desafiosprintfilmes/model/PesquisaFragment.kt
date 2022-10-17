@@ -1,31 +1,32 @@
-package br.com.example.desafiosprintfilmes
+package br.com.example.desafiosprintfilmes.model
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import br.com.example.desafiosprintfilmes.R
 import br.com.example.desafiosprintfilmes.adapter.RecyclerFilmesAdapter
 import br.com.example.desafiosprintfilmes.database.FilmesDatabase
-import br.com.example.desafiosprintfilmes.databinding.FragmentFilmesBinding
-import br.com.example.desafiosprintfilmes.model.Filme
+import br.com.example.desafiosprintfilmes.databinding.FragmentPesquisaBinding
 import br.com.example.desafiosprintfilmes.repository.FilmeRepository
 import br.com.example.desafiosprintfilmes.viewmodel.FilmesViewModel
 import br.com.example.desafiosprintfilmes.viewmodel.FilmesViewModelFactory
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
-class FilmesFragment : Fragment() {
+class PesquisaFragment : Fragment() {
+
     private lateinit var recyclerFilmes: RecyclerView
+    private lateinit var searchViewFilmes: SearchView
     private val repository by lazy {
         FilmeRepository(
-            favoritosDao = FilmesDatabase.pegaDatabase(requireContext()).filmeFavoritoDao())
+            favoritosDao = FilmesDatabase.pegaDatabase(requireContext()).filmeFavoritoDao()
+        )
     }
     private val viewModel: FilmesViewModel by activityViewModels {
         FilmesViewModelFactory(repository)
@@ -34,8 +35,7 @@ class FilmesFragment : Fragment() {
     private lateinit var recyclerFilmesLayoutManager: GridLayoutManager
     private lateinit var recyclerViewFilmesObservador: RecyclerView.OnScrollListener
 
-
-    private var _binding: FragmentFilmesBinding? = null
+    private var _binding: FragmentPesquisaBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -45,26 +45,43 @@ class FilmesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFilmesBinding.inflate(inflater, container, false)
+        _binding = FragmentPesquisaBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        configuraSearchView()
         configuraRecycler()
-        pegaPopulares()
         configuraOnClickListener()
         super.onViewCreated(view, savedInstanceState)
-
     }
-//
-//    private fun configuraViewModel() {
-//        viewModelFactory = FilmesViewModelFactory(repository)
-//        viewModel = ViewModelProvider(this, viewModelFactory)[FilmesViewModel::class.java]
-//    }
 
-    private fun pegaPopulares() {
-        viewModel.pegaFilmePopular()
-        viewModel.observaFilmeLiveData().observe(viewLifecycleOwner) { filmes ->
+    private fun configuraSearchView() {
+        searchViewFilmes = binding.searchViewFilmes
+
+        searchViewFilmes.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText == ""){
+                    recyclerFilmesAdapter.atualizaPesquisados()
+                }else{
+                    viewModel.queryPesquisa = newText!!
+                    recyclerFilmesAdapter.atualizaPesquisados()
+                    viewModel.filmesPesquisadosPagina = 1
+                    pegaPesquisados()
+                }
+                return false
+            }
+
+        })
+    }
+
+    private fun pegaPesquisados() {
+        viewModel.pesquisaFilmes()
+        viewModel.observaPesquisadosLiveData().observe(viewLifecycleOwner) { filmes ->
             recyclerFilmesAdapter.atualizaListaFilmes(filmes as MutableList<Filme>)
             if (::recyclerViewFilmesObservador.isInitialized) {
                 recyclerFilmes.removeOnScrollListener(recyclerViewFilmesObservador)
@@ -72,6 +89,7 @@ class FilmesFragment : Fragment() {
             }
         }
     }
+
 
     private fun anexaFilmesOnScrollListener() {
         recyclerViewFilmesObservador = object : RecyclerView.OnScrollListener() {
@@ -85,10 +103,11 @@ class FilmesFragment : Fragment() {
                     val totalItemCount = layoutManager.itemCount
 
                     if (totalItemVisible >= totalItemCount) {
-                        viewModel.filmesPopularesPagina += 1
-                        recyclerFilmes.removeOnScrollListener(recyclerViewFilmesObservador)
-                        pegaPopulares()
-
+                        if (viewModel.filmesPesquisadosPagina <= viewModel.filmesPesquisadosTotalPaginas) {
+                            viewModel.filmesPesquisadosPagina += 1
+                            recyclerFilmes.removeOnScrollListener(recyclerViewFilmesObservador)
+                            pegaPesquisados()
+                        }
                     }
                 }
 
@@ -114,7 +133,8 @@ class FilmesFragment : Fragment() {
         recyclerFilmesAdapter.setOnItemClickListener(object :
             RecyclerFilmesAdapter.OnItemClickListener {
             override fun onItemClick(position: Int) {
-                viewModel._filmeSelecionado.value = recyclerFilmesAdapter.pegaFilmeSelecionado(position)
+                viewModel._filmeSelecionado.value =
+                    recyclerFilmesAdapter.pegaFilmeSelecionado(position)
                 vaiParaSecondFragment()
             }
 
@@ -124,12 +144,12 @@ class FilmesFragment : Fragment() {
     private fun vaiParaSecondFragment() {
         parentFragment?.let {
             NavHostFragment.findNavController(it)
-                .navigate(R.id.action_FirstFragment_to_SecondFragment)
+                .navigate(R.id.action_pesquisaFragment_to_SecondFragment)
         }
     }
 
     private fun configuraRecycler() {
-        recyclerFilmes = binding.recyclerViewFilmes
+        recyclerFilmes = binding.recyclerViewFilmesPesquisados
         recyclerFilmesLayoutManager = GridLayoutManager(context, 4)
         recyclerFilmes.layoutManager = recyclerFilmesLayoutManager
         recyclerFilmes.adapter = recyclerFilmesAdapter
@@ -139,4 +159,5 @@ class FilmesFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }

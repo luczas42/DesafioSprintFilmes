@@ -63,7 +63,30 @@ class DetalhesFragment : Fragment() {
         viewModel.checaFavorito(filme)
         alteraBotao()
 
+        checaCampos(filme, filmeDataFormatada, linkCapa, linkFundo)
 
+        fabAddFavorito.setOnClickListener {
+            viewModel.alteraFavorito(filme)
+            viewModel.observaFavoritoLiveData().observe(viewLifecycleOwner){ favorito ->
+                if (favorito) {
+                    fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
+                } else {
+                fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
+                }
+            }
+        }
+
+
+    return binding.root
+
+}
+
+    private fun checaCampos(
+        filme: Filme,
+        filmeDataFormatada: Any,
+        linkCapa: String,
+        linkFundo: String
+    ) {
         if (filme.titulo.equals(null)) {
             tituloFilme.text = ""
         } else {
@@ -93,22 +116,7 @@ class DetalhesFragment : Fragment() {
             Glide.with(this).load("https://image.tmdb.org/t/p/w500${linkFundo}").centerCrop()
                 .into(fundoFilme)
         }
-
-        fabAddFavorito.setOnClickListener {
-            viewModel.alteraFavorito(filme)
-            viewModel.observaFavoritoLiveData().observe(viewLifecycleOwner){ favorito ->
-                if (favorito) {
-                    fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
-                } else {
-                fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
-                }
-            }
-        }
-
-
-    return binding.root
-
-}
+    }
 
     private fun alteraBotao() {
         viewModel.observaFavoritoLiveData().observe(viewLifecycleOwner){ favorito ->
