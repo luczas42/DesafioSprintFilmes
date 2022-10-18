@@ -1,9 +1,11 @@
 package br.com.example.desafiosprintfilmes
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -32,7 +34,7 @@ class DetalhesFragment : Fragment() {
     private lateinit var lancamentoFilme: TextView
     private lateinit var descricaoFilme: TextView
     private lateinit var filmeNota: TextView
-    private lateinit var fabAddFavorito: FloatingActionButton
+    private lateinit var botaoFavorito: ImageButton
     private val repository by lazy {
         FilmeRepository(
             favoritosDao = FilmesDatabase.pegaDatabase(requireContext()).filmeFavoritoDao()
@@ -55,23 +57,33 @@ class DetalhesFragment : Fragment() {
     ): View {
         val filme: Filme = viewModel.filmeSelecionado.value!!
         val filmeDataFormatada = formataLancamentoFilme(filme.dataLancamento)
-        val linkCapa = filme.imagemPoster
-        val linkFundo = filme.imagemFundo
+        val linkCapa: String = filme.imagemPoster
+        val linkFundo: String = filme.imagemFundo
 
         _binding = FragmentDetalhesBinding.inflate(inflater, container, false)
         inicializaCampos()
+
         viewModel.checaFavorito(filme)
-        alteraBotao()
+        viewModel.observaFavoritoLiveData().observe(viewLifecycleOwner){ favorito ->
+            Log.i("checafavorito", "onCreateView: ate aqui vai")
+            if (favorito){
+                Log.i("checafavorito", "noif: ate aqui vai favorito")
+                botaoFavorito.setBackgroundResource(R.drawable.ic_baseline_star_48)
+            }else{
+                Log.i("checafavorito", "noif: ate aqui vai nofav")
+                botaoFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_48)
+            }
+        }
 
         checaCampos(filme, filmeDataFormatada, linkCapa, linkFundo)
 
-        fabAddFavorito.setOnClickListener {
+        botaoFavorito.setOnClickListener {
             viewModel.alteraFavorito(filme)
             viewModel.observaFavoritoLiveData().observe(viewLifecycleOwner){ favorito ->
-                if (favorito) {
-                    fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
-                } else {
-                fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
+                if (favorito){
+                    botaoFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_48)
+                }else{
+                    botaoFavorito.setBackgroundResource(R.drawable.ic_baseline_star_48)
                 }
             }
         }
@@ -84,8 +96,8 @@ class DetalhesFragment : Fragment() {
     private fun checaCampos(
         filme: Filme,
         filmeDataFormatada: Any,
-        linkCapa: String,
-        linkFundo: String
+        linkCapa: String?,
+        linkFundo: String?
     ) {
         if (filme.titulo.equals(null)) {
             tituloFilme.text = ""
@@ -118,18 +130,6 @@ class DetalhesFragment : Fragment() {
         }
     }
 
-    private fun alteraBotao() {
-        viewModel.observaFavoritoLiveData().observe(viewLifecycleOwner){ favorito ->
-            if (favorito) {
-                fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
-
-            } else {
-                fabAddFavorito.setBackgroundResource(R.drawable.ic_baseline_star_border_24)
-            }
-        }
-
-    }
-
     private fun inicializaCampos() {
     fundoFilme = binding.fragmentSecondFilmeBackground
     capaFilme = binding.fragmentSecondFilmeCapa
@@ -137,12 +137,12 @@ class DetalhesFragment : Fragment() {
     lancamentoFilme = binding.fragmentSecondFilmeAno
     descricaoFilme = binding.fragmentSecondFilmeDescricao
     filmeNota = binding.fragmentSecondFilmeNota
-    fabAddFavorito = binding.fabAdicionaFavorito
+    botaoFavorito = binding.botaoFavorito
 }
 
 private fun formataLancamentoFilme(dataLancamento: String): Any {
     val data = LocalDate.parse(dataLancamento)
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val formatter = DateTimeFormatter.ofPattern("yyyy")
     return data.format(formatter)
 }
 

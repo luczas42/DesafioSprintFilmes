@@ -1,6 +1,7 @@
 package br.com.example.desafiosprintfilmes.viewmodel
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,7 +17,7 @@ import retrofit2.Response
 
 
 class FilmesViewModel(val repository: FilmeRepository) : ViewModel() {
-    var queryPesquisa: String = ""
+    var queryPesquisa: String? = null
     var filmesPopularesPagina = 1
     var filmesPesquisadosTotalPaginas = 1
     var filmesPesquisadosPagina = 1
@@ -30,6 +31,7 @@ class FilmesViewModel(val repository: FilmeRepository) : ViewModel() {
 
     fun checaFavorito(filme: Filme) {
         viewModelScope.launch {
+            Log.i("checaFavorito", "checaFavorito: ate aqui vai")
             favorito.value = repository.checaExiste(filme)
         }
 

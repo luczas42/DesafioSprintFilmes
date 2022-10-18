@@ -42,8 +42,8 @@
     </fragment>
     <fragment
         android:id="@+id/pesquisaFragment"
-        android:name="br.com.example.desafiosprintfilmes.model.PesquisaFragment"
-        android:label="fragment_pesquisa"
+        android:name="br.com.example.desafiosprintfilmes.PesquisaFragment"
+        android:label="Filmes App"
         tools:layout="@layout/fragment_pesquisa" >
         <action
             android:id="@+id/action_pesquisaFragment_to_SecondFragment"

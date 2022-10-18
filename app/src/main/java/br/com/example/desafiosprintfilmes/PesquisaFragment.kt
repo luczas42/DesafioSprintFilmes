@@ -1,4 +1,4 @@
-package br.com.example.desafiosprintfilmes.model
+package br.com.example.desafiosprintfilmes
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,10 +11,10 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import br.com.example.desafiosprintfilmes.R
 import br.com.example.desafiosprintfilmes.adapter.RecyclerFilmesAdapter
 import br.com.example.desafiosprintfilmes.database.FilmesDatabase
 import br.com.example.desafiosprintfilmes.databinding.FragmentPesquisaBinding
+import br.com.example.desafiosprintfilmes.model.Filme
 import br.com.example.desafiosprintfilmes.repository.FilmeRepository
 import br.com.example.desafiosprintfilmes.viewmodel.FilmesViewModel
 import br.com.example.desafiosprintfilmes.viewmodel.FilmesViewModelFactory
@@ -61,18 +61,19 @@ class PesquisaFragment : Fragment() {
 
         searchViewFilmes.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
+                searchViewFilmes.clearFocus()
+                viewModel.queryPesquisa = query
+                recyclerFilmesAdapter.atualizaPesquisados()
+                viewModel.filmesPesquisadosPagina = 1
+                pegaPesquisados()
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText == ""){
                     recyclerFilmesAdapter.atualizaPesquisados()
-                }else{
-                    viewModel.queryPesquisa = newText!!
-                    recyclerFilmesAdapter.atualizaPesquisados()
-                    viewModel.filmesPesquisadosPagina = 1
-                    pegaPesquisados()
                 }
+
                 return false
             }
 
